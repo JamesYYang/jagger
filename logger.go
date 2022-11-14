@@ -1,6 +1,7 @@
 package jagger
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -125,16 +126,29 @@ func (l *Logger) output(s Level, txt string) {
 	}
 }
 
+func getJsonMessage(v interface{}) string {
+	b, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	message := string(b)
+	return message
+}
+
 func (l *Logger) Debug(v ...interface{}) {
-	l.output(InfoLevel, fmt.Sprint(v...))
+	l.output(DebugLevel, fmt.Sprint(v...))
 }
 
 func (l *Logger) Debugln(v ...interface{}) {
-	l.output(InfoLevel, fmt.Sprintln(v...))
+	l.output(DebugLevel, fmt.Sprintln(v...))
 }
 
 func (l *Logger) Debugf(format string, v ...interface{}) {
-	l.output(InfoLevel, fmt.Sprintf(format, v...))
+	l.output(DebugLevel, fmt.Sprintf(format, v...))
+}
+
+func (l *Logger) Debugj(v interface{}) {
+	l.output(DebugLevel, getJsonMessage(v))
 }
 
 func (l *Logger) Info(v ...interface{}) {
@@ -149,6 +163,10 @@ func (l *Logger) Infof(format string, v ...interface{}) {
 	l.output(InfoLevel, fmt.Sprintf(format, v...))
 }
 
+func (l *Logger) Infoj(v interface{}) {
+	l.output(InfoLevel, getJsonMessage(v))
+}
+
 func (l *Logger) Warning(v ...interface{}) {
 	l.output(WarningLevel, fmt.Sprint(v...))
 }
@@ -161,6 +179,10 @@ func (l *Logger) Warningf(format string, v ...interface{}) {
 	l.output(WarningLevel, fmt.Sprintf(format, v...))
 }
 
+func (l *Logger) Warningj(v interface{}) {
+	l.output(WarningLevel, getJsonMessage(v))
+}
+
 func (l *Logger) Error(v ...interface{}) {
 	l.output(ErrorLevel, fmt.Sprint(v...))
 }
@@ -171,6 +193,10 @@ func (l *Logger) Errorln(v ...interface{}) {
 
 func (l *Logger) Errorf(format string, v ...interface{}) {
 	l.output(ErrorLevel, fmt.Sprintf(format, v...))
+}
+
+func (l *Logger) Errorj(v interface{}) {
+	l.output(ErrorLevel, getJsonMessage(v))
 }
 
 func (l *Logger) Fatal(v ...interface{}) {
@@ -188,65 +214,86 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
+func (l *Logger) Fatalj(v interface{}) {
+	l.output(FatalLevel, getJsonMessage(v))
+}
+
 func Debug(v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprint(v...))
+	defaultLogger.Debug(v...)
 }
 
 func Debugln(v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprintln(v...))
+	defaultLogger.Debugln(v...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprintf(format, v...))
+	defaultLogger.Debugf(format, v...)
+}
+
+func Debugj(v interface{}) {
+	defaultLogger.Debugj(v)
 }
 
 func Info(v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprint(v...))
+	defaultLogger.Info(v...)
 }
 
 func Infoln(v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprintln(v...))
+	defaultLogger.Infoln(v...)
 }
 
 func Infof(format string, v ...interface{}) {
-	defaultLogger.output(InfoLevel, fmt.Sprintf(format, v...))
+	defaultLogger.Infof(format, v...)
+}
+
+func Infoj(v interface{}) {
+	defaultLogger.Infoj(v)
 }
 
 func Warning(v ...interface{}) {
-	defaultLogger.output(WarningLevel, fmt.Sprint(v...))
+	defaultLogger.Warning(v...)
 }
 
 func Warningln(v ...interface{}) {
-	defaultLogger.output(WarningLevel, fmt.Sprintln(v...))
+	defaultLogger.Warningln(v...)
 }
 
 func Warningf(format string, v ...interface{}) {
-	defaultLogger.output(WarningLevel, fmt.Sprintf(format, v...))
+	defaultLogger.Warningf(format, v...)
+}
+
+func Warningj(v interface{}) {
+	defaultLogger.Warningj(v)
 }
 
 func Error(v ...interface{}) {
-	defaultLogger.output(ErrorLevel, fmt.Sprint(v...))
+	defaultLogger.Error(v...)
 }
 
 func Errorln(v ...interface{}) {
-	defaultLogger.output(ErrorLevel, fmt.Sprintln(v...))
+	defaultLogger.Errorln(v...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	defaultLogger.output(ErrorLevel, fmt.Sprintf(format, v...))
+	defaultLogger.Errorf(format, v...)
+}
+
+func Errorj(v interface{}) {
+	defaultLogger.Errorj(v)
 }
 
 func Fatal(v ...interface{}) {
-	defaultLogger.output(FatalLevel, fmt.Sprint(v...))
-	os.Exit(1)
+	defaultLogger.Fatal(v...)
 }
 
 func Fatalln(v ...interface{}) {
-	defaultLogger.output(FatalLevel, fmt.Sprintln(v...))
-	os.Exit(1)
+	defaultLogger.Fatalln(v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	defaultLogger.output(FatalLevel, fmt.Sprintf(format, v...))
-	os.Exit(1)
+	defaultLogger.Fatalf(format, v...)
+}
+
+func Fatalj(v interface{}) {
+	defaultLogger.Fatalj(v)
 }
