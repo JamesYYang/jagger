@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
-	"sync"
+	"strings"
 )
 
 const (
@@ -17,8 +17,8 @@ const (
 )
 
 const (
-	flags    = log.Ldate | log.Lmicroseconds | log.Lshortfile
-	initText = "Jagger"
+	flags       = log.Ldate | log.Lmicroseconds | log.Lshortfile
+	defaultName = "Jagger"
 )
 
 const (
@@ -38,10 +38,9 @@ type Logger struct {
 	errorLog   *log.Logger
 	fatalLog   *log.Logger
 	level      Level
-	sync.Mutex
 }
 
-var defaultLogger = New(initText)
+var defaultLogger = New(defaultName)
 
 func New(name string) *Logger {
 	return &Logger{
@@ -51,6 +50,23 @@ func New(name string) *Logger {
 		errorLog:   log.New(os.Stderr, "["+name+"] "+tagError, flags),
 		fatalLog:   log.New(os.Stderr, "["+name+"] "+tagFatal, flags),
 		level:      InfoLevel,
+	}
+}
+
+func ParseLevel(lvl string) Level {
+	switch strings.ToLower(lvl) {
+	case "fatal":
+		return FatalLevel
+	case "error":
+		return ErrorLevel
+	case "warn", "warning":
+		return WarningLevel
+	case "info":
+		return InfoLevel
+	case "debug":
+		return DebugLevel
+	default:
+		return InfoLevel
 	}
 }
 
@@ -91,8 +107,6 @@ func (l *Logger) isLevelEnabled(level Level) bool {
 }
 
 func (l *Logger) output(s Level, txt string) {
-	l.Lock()
-	defer l.Unlock()
 	if l.isLevelEnabled(s) {
 		switch s {
 		case DebugLevel:
